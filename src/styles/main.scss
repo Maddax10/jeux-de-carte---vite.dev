@@ -1,44 +1,279 @@
 @use "normalize";
 @use "variable";
 @use "fonts";
-// @use "maintenance";
 
+//==============================================================
+// Variables locales (en attendant _variable.scss rempli)
+//==============================================================
+$font-stack: 'Raleway', system-ui, sans-serif;
+$clr-bg: #0f1115;
+$clr-surface: #1c222b;
+$clr-surface-alt: #252f3b;
+$clr-accent: #ffb347; // orangé doux
+$clr-accent-strong: #ff8c42;
+$clr-accent-glow: #ffe2c4;
+$clr-danger: #ff4d5d;
+$clr-success: #45d38e;
+$clr-border: #2f3a46;
+$clr-text: #eef2f5;
+$clr-text-dim: #95a2b3;
+$radius-sm: .4rem;
+$radius-md: .8rem;
+$radius-lg: 1.2rem;
+$transition: .18s cubic-bezier(.4, .0, .2, 1);
+$shadow-soft: 0 4px 12px -2px rgba(0,0,0,.4), 0 2px 4px -1px rgba(0,0,0,.3);
+$shadow-focus: 0 0 0 3px rgba(255,140,66,.35), 0 6px 18px -4px rgba(0,0,0,.55);
+
+html, body {
+  height: 100%;
+}
+body {
+  font-family: $font-stack;
+  background: radial-gradient(circle at 30% 20%, #18202a, #0f1115 70%);
+  color: $clr-text;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh; // occupe toute la hauteur viewport
+  padding: clamp(1rem, 2.5vw, 3rem);
+  padding-bottom: clamp(3rem, 8vh, 5rem); // espace supplémentaire bas
+  gap: 2rem;
+}
+body::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: clamp(2.5rem, 6vh, 4.5rem); // espace forcé bas
+  flex: 0 0 auto;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+
+//==============================================================
+// Layout principal
+//==============================================================
 .textZone {
-  display: grid;
-  grid-auto-flow: column;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1rem, 2vw, 2.5rem);
+  align-items: flex-start;
   justify-content: center;
-  gap:3rem;
+  width: 100%;
+  max-width: 1400px;
 }
-.dropZone {
-  background-color: green;
-  display: grid;
-  justify-content: center;
-  margin-block:2rem;
-}
-.myCardsZone{
-  display:grid;
-  grid-auto-flow: column;
-  justify-content: center;
-  gap:2rem;
-}
-.cardToFindZone {
-  display: grid;
-  background-color: red;
-  justify-content: center;
-  margin-block:2rem;
 
+// Zone de la carte à trouver
+.cardToFindZone, .dropZone {
+  background: linear-gradient(145deg, $clr-surface, $clr-surface-alt);
+  padding: 1.4rem 1.8rem;
+  border: 1px solid $clr-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-soft;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  min-width: 220px;
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(120deg, rgba(255,140,66,.15), transparent 60%);
+    opacity: 0;
+    transition: $transition;
+  }
+  &:hover::before { opacity: 1; }
 }
-.emptyCard {
-  background-color: gray;
-  border:1px solid rgb(68, 68, 68);
-  height: 200px;
-  width: 150px;
-  border-radius:10px;
+
+.dropZone { min-height: 140px; }
+
+// Main du joueur
+.myCardsZone {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(.8rem, 1.2vw, 1.2rem);
+  padding: 1.2rem 1.4rem;
+  background: rgba(255,255,255,.03);
+  border: 1px solid $clr-border;
+  backdrop-filter: blur(6px);
+  border-radius: $radius-lg;
+  width: 100%;
+  min-height: 180px;
+  position: relative;
+  margin-bottom: clamp(2rem, 6vh, 4rem); // espace bas
 }
-.card {
-  background-color: blue;
-  height: 150px;
+// Adaptation quand beaucoup de cartes (réduction légère)
+.myCardsZone .card {
+  flex: 0 1 100px;
+}
+@media (max-width: 900px) {
+  .myCardsZone .card { flex: 0 1 90px; }
+}
+
+// Zone du bouton skip
+.skipZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button, .btn-skip {
+  // Palette plus vive pour détacher du fond sombre
+  --btn-bg: #ffd75a; // jaune chaud lumineux
+  --btn-bg-mid: #ffb347; // ton intermédiaire
+  --btn-bg-hover: #ff9725; // orange soutenu
+  appearance: none;
+  background: linear-gradient(160deg,var(--btn-bg) 0%, var(--btn-bg-mid) 55%, var(--btn-bg-hover) 100%);
+  color: #2c1a00;
+  font-weight: 700;
+  border: 2px solid rgba(255,217,120,.9);
+  padding: .95rem 1.6rem;
+  font-size: 1rem;
+  letter-spacing: .6px;
+  border-radius: $radius-md;
+  cursor: pointer;
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.55),
+    0 4px 18px -4px rgba(255,151,37,.65),
+    0 2px 6px -1px rgba(0,0,0,.75),
+    0 0 0 6px rgba(255,151,37,.15);
+  transition: $transition;
+  overflow: hidden;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+// Badge optionnel
+.btn-skip .badge {
+  background: $clr-surface-alt;
+  color: $clr-text-dim;
+  font-size: .65rem;
+  font-weight: 500;
+  padding: .25rem .45rem;
+  border-radius: 1rem;
+  margin-left: .6rem;
+  line-height: 1;
+  border: 1px solid $clr-border;
+}
+button::after, .btn-skip::after {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 25% 15%, rgba(255,255,255,.55), transparent 60%),
+    linear-gradient(120deg, rgba(255,255,255,.5), transparent 70%);
+  mix-blend-mode: screen;
+  opacity: .35; transition: $transition;
+  pointer-events: none;
+}
+button:hover::after, .btn-skip:hover::after { opacity: .65; }
+button:hover, .btn-skip:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 2px rgba(255,230,170,.65),
+    0 6px 22px -4px rgba(255,151,37,.85),
+    0 3px 10px -2px rgba(0,0,0,.8),
+    0 0 0 9px rgba(255,151,37,.18);
+}
+button:focus-visible, .btn-skip:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px #111,
+    0 0 0 5px #ffe7b0,
+    0 0 0 9px rgba(255,151,37,.35);
+}
+button:active, .btn-skip:active { transform: translateY(0); box-shadow: none; }
+button:disabled { filter: grayscale(.6) brightness(.7); cursor: not-allowed; }
+.btn-skip.is-cooldown {
+  --btn-bg: #7a7f85;
+  --btn-bg-hover: #6a6f75;
+  cursor: wait;
+  position: relative;
+}
+.btn-skip.is-cooldown::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(45deg, rgba(255,255,255,.08) 0 10px, transparent 10px 20px);
+  animation: stripes 1s linear infinite;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+.btn-skip.is-danger { --btn-bg: $clr-danger; --btn-bg-hover: lighten($clr-danger,5%); color: #fff; }
+@keyframes stripes { to { background-position: 40px 0; } }
+
+//==============================================================
+// Cartes
+//==============================================================
+.emptyCard, .card {
+  --card-bg: linear-gradient(160deg,#223040,#1a232c);
   width: 100px;
-  border-radius:10px;
-  border:2px solid rgb(0, 0, 171);
+  height: 150px;
+  border-radius: $radius-md;
+  border: 1px solid $clr-border;
+  position: relative;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.9rem;
+  letter-spacing: 1px;
+  user-select: none;
+  color: $clr-accent;
+  text-shadow: 0 2px 6px rgba(0,0,0,.55);
+  background: var(--card-bg);
+  box-shadow: $shadow-soft;
+  transition: $transition;
+  cursor: pointer;
+}
+.emptyCard { color: $clr-text-dim; font-weight: 400; }
+.card::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1px; background: linear-gradient(120deg, rgba(255,140,66,.65), transparent 70%);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0; transition: $transition;
+}
+.card:hover::before { opacity: 1; }
+.card:hover { transform: translateY(-6px) rotate(-2deg); box-shadow: $shadow-focus; }
+.card:active { transform: translateY(-2px); }
+.card.is-played { filter: grayscale(.75) brightness(.5); cursor: default; transform: none !important; }
+.card.is-current { outline: 3px solid $clr-success; box-shadow: 0 0 0 4px rgba(69,211,142,.25), $shadow-soft; }
+
+// Animation discrète d'apparition
+@keyframes popIn {
+  0% { transform: scale(.6) translateY(30px); opacity: 0; }
+  60% { transform: scale(1.05) translateY(-4px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.card { animation: popIn .45s $transition; }
+
+//==============================================================
+// Utilitaires / états
+//==============================================================
+.u-center { display: flex; align-items: center; justify-content: center; }
+.u-hidden { display: none !important; }
+
+//==============================================================
+// Responsive
+//==============================================================
+@media (max-width: 900px) {
+  .myCardsZone { grid-auto-flow: unset; grid-template-columns: repeat(auto-fill, minmax(90px,1fr)); }
+  .textZone { flex-direction: column; align-items: stretch; }
+  .card { width: 90px; height: 135px; font-size: 1.6rem; }
+}
+
+@media (max-width: 600px) {
+  body { padding: 1rem; }
+  .card { width: 80px; height: 120px; font-size: 1.4rem; }
 }

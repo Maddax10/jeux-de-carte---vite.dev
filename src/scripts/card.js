@@ -9,4 +9,7 @@ export class Card {
   setPlayedToTrue = () => {
     this.played = true;
   }
+  getPlayed = () => {
+    return this.played;
+  }
 }

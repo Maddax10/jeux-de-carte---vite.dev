@@ -10,16 +10,16 @@
     <div class="textZone">
       <label>Max</label>
       <label>Niveau 1 - 00:00</label>
-      <label> <span>0</span> points </label>
+      <label> <span id="points">0</span> points </label>
     </div>
-    <div class="cardToFindZone"><div class="card">cardToFind</div></div>
+    <div class="cardToFindZone" id="cardToFindZone"></div>
     <div class="dropZone"><div class="emptyCard">dropZone</div></div>
-    <div class="myCardsZone">
-      <div class="card">card1</div>
-      <div class="card">card2</div>
-      <div class="card">card3</div>
-      <div class="card">card4</div>
-      <div class="card">card5</div>
+    <div class="skipZone">
+      <button type="button" id="skip" class="btn-skip" aria-label="Passer cette carte">
+        <span class="btn-label">⏭ Passer</span>
+      </button>
+    </div>
+    <div class="myCardsZone" id="myCardsZone">
     </div>
   </body>
 </html>
