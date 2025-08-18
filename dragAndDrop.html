@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag</title>
+    <style>
+        .drag {
+            height: 150px;
+            width: 250px;
+            border: 1px solid black;
+            background-color: beige;
+        }
+        .drop {
+            height: 350px;
+            width: 450px;
+             border: 1px solid green;
+        }
+        .drag.active {
+           opacity: .5;
+        }
+        .drop.active {
+            background-color: silver;
+        }
+    </style>
+</head>
+<body>
+    <div class="drag" draggable="true">1</div>
+    <div class="drag" draggable="true">2</div>
+    <div class="drop">here</div>
+    <script src="drag.js"></script>
+</body>
+</html>
