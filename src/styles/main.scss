@@ -2,3 +2,43 @@
 @use "variable";
 @use "fonts";
 // @use "maintenance";
+
+.textZone {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: center;
+  gap:3rem;
+}
+.dropZone {
+  background-color: green;
+  display: grid;
+  justify-content: center;
+  margin-block:2rem;
+}
+.myCardsZone{
+  display:grid;
+  grid-auto-flow: column;
+  justify-content: center;
+  gap:2rem;
+}
+.cardToFindZone {
+  display: grid;
+  background-color: red;
+  justify-content: center;
+  margin-block:2rem;
+
+}
+.emptyCard {
+  background-color: gray;
+  border:1px solid rgb(68, 68, 68);
+  height: 200px;
+  width: 150px;
+  border-radius:10px;
+}
+.card {
+  background-color: blue;
+  height: 150px;
+  width: 100px;
+  border-radius:10px;
+  border:2px solid rgb(0, 0, 171);
+}
