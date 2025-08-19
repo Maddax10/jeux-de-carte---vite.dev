@@ -2,7 +2,6 @@
 
 - gérer le fait qu'il n'y ai que 5 niveaux maximum et que le jeu doit s'arrêter au bout des 5 niveaux.
 
-
 */
 
 
@@ -223,7 +222,6 @@ const checkEndGame = () => {
   // ou
   // Vérification si on a joué toutes nos cartes
   if (nbCardPlayed > 9 || myCards.length <= 0 || secondsByLvl[currentLvl] <= 0) {
-    alert("Fini | Points : " + points + " points");
     resetGame();
     return true;
   }
@@ -231,7 +229,6 @@ const checkEndGame = () => {
 }
 const resetGame = () => {
   // Réinitialise les variables
-  points = 0;
   secondsByLvl = [100,80,60,40,20];
   allCards = [];
   myCards = [];
