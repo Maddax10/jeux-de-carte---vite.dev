@@ -24,6 +24,7 @@ let myCards = new Array()
 let points = 0;
 let secondsByLvl = [100,80,60,40,20];
 let currentLvl = 0;
+const MaxLvl = 5;
 let timerId = 0;
 
 //———————————————————————————————————————————————————————————
@@ -88,9 +89,12 @@ dropZone.addEventListener('drop', e => {
   let cardClickedValue = Number(dragged.textContent);
   let currentCardValue = currentCard.getValue();
 
+  if(currentLvl = 0){
+    sortCards();
+  }
+
   if (cardClickedValue === currentCardValue) {
     points++;
-
   } else {
     points--;
     // Optionnel : effet visuel d'erreur
@@ -104,16 +108,8 @@ dropZone.addEventListener('drop', e => {
 });
 
 //-----------------------------------------------------------
-//Fin génération
+//Fin gestion du drop
 //-----------------------------------------------------------
-
-const getRandom = () => {
-  return Math.floor(Math.random() * 10);
-}
-
-const updatePoints = () => {
-  pointsSpan.innerHTML = points;
-}
 
 //———————————————————————————————————————————————————————————
 // génération des cartes
@@ -149,10 +145,7 @@ const getFiveCards = () => {
 // Manipulation des cards
 //———————————————————————————————————————————————————————————
 
-//Trie des cards dans l'ordre
-//Pour éviter de voir le tableau trié avant, je fais un slice (car l'affectation est via reference et non par copie)
-console.log("Avant le tri : ", myCards.slice());
-
+//Trie des cards de la main dans l'ordre
 const sortCards = () => {
   let tmp;
   for (let i = 0; i < myCards.length - 1; i++) {
@@ -190,6 +183,7 @@ const skip = () => {
 // Ajout des cards pour le front
 //———————————————————————————————————————————————————————————
 //Ajout des cartes de la main
+
 const showHandCards = () => {
   for (let i = 0; i < myCards.length; i++) {
     const cardDiv = document.createElement("div");
@@ -239,7 +233,6 @@ const resetGame = () => {
   // Regénère toutes les cartes et la main
   generateAllCards(10);
   getFiveCards();
-  sortCards();
 
   // Réaffiche les cartes de la main
   showHandCards();
@@ -272,6 +265,14 @@ const setCurrentCard = () => {
 //-----------------------------------------------------------
 // Fin Ajout des cards pour le front
 //-----------------------------------------------------------
+
+const getRandom = () => {
+  return Math.floor(Math.random() * 10);
+}
+
+const updatePoints = () => {
+  pointsSpan.innerHTML = points;
+}
 
 //———————————————————————————————————————————————————————————
 // Events
