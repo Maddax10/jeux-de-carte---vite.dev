@@ -1,9 +1,20 @@
+/* 
+
+- gérer le fait qu'il n'y ai que 5 niveaux maximum et que le jeu doit s'arrêter au bout des 5 niveaux.
+
+
+*/
+
+
 import '/src/styles/main.scss'
 import { Card } from "./card.js"
+
 const myCardsZone = document.querySelector("#myCardsZone");
 const cardToFindZone = document.querySelector("#cardToFindZone");
 const pointsSpan = document.querySelector("#points");
 const skipBtn = document.querySelector("#skipBtn");
+const time = document.querySelector("#time");
+const levels = document.querySelector("#levels");
 
 let allCards = new Array();
 const emptyCard = new Card(0);
@@ -12,12 +23,94 @@ const emptyCard = new Card(0);
 let currentCard = emptyCard;
 let myCards = new Array()
 let points = 0;
+let secondsByLvl = [100,80,60,40,20];
+let currentLvl = 0;
+let timerId = 0;
+
+//———————————————————————————————————————————————————————————
+// Gestion du timer et des niveaux
+//———————————————————————————————————————————————————————————
+const timer = () => {
+  if(timerId > 0) clearInterval(timerId);
+  timerId = 
+  setInterval(() => {
+    secondsByLvl[currentLvl]--;
+    let secondsTmp = secondsByLvl[currentLvl] % 60;
+    console.log(secondsTmp);
+    let minutesTmp = (secondsByLvl[currentLvl] - secondsTmp) / 60;
+    time.innerHTML = `${minutesTmp}:${secondsTmp}`;
+    // Pour arrêter le timer quand ça arrive à 0 seconde :
+    if (secondsByLvl[currentLvl] <= 0) {
+      clearInterval(timerId)
+      checkEndGame();
+    };
+  }, 1000);
+}
+
+const resetLvl = () => {
+  currentLvl = 0;
+}
+
+const addLvl = () => {
+  currentLvl++;
+}
+
+const updateLvl = () => {
+  levels.innerHTML = currentLvl + 1;
+}
+
+//-----------------------------------------------------------
+// Fin Gestion du timer
+//-----------------------------------------------------------
+
+//———————————————————————————————————————————————————————————
+// Gestion du drop
+//———————————————————————————————————————————————————————————
+//Event du drop des éléments dans la génération des cartes
+
+const dropZone = document.querySelector("#emptyCardDropZone");
+
+let dragged = null;
+
+dropZone.addEventListener('dragover', e => {
+  e.preventDefault(); // autorise le drop
+  e.target.classList.add('active');
+});
+
+dropZone.addEventListener('dragleave', e => {
+  e.preventDefault(); // autorise le drop
+  e.target.classList.remove('active');
+});
+
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+
+  // Récupère la valeur de la carte déposée
+  let cardClickedValue = Number(dragged.textContent);
+  let currentCardValue = currentCard.getValue();
+
+  if (cardClickedValue === currentCardValue) {
+    points++;
+
+  } else {
+    points--;
+    // Optionnel : effet visuel d'erreur
+  }
+  // Marque la carte comme jouée
+  dragged.remove();
+  removeCardFromHand(cardClickedValue);
+  updatePoints();
+  setCurrentCard();
+  // e.target.remove();
+});
+
+//-----------------------------------------------------------
+//Fin génération
+//-----------------------------------------------------------
 
 const getRandom = () => {
   return Math.floor(Math.random() * 10);
 }
-
-
 
 const updatePoints = () => {
   pointsSpan.innerHTML = points;
@@ -34,8 +127,6 @@ const generateAllCards = (nbCards) => {
   }
 }
 
-generateAllCards(10);
-
 //Attribution des cartes dans notre main
 const getFiveCards = () => {
   let rnd;
@@ -50,9 +141,6 @@ const getFiveCards = () => {
     }
   }
 }
-
-getFiveCards();
-console.log("myCards", myCards);
 
 //-----------------------------------------------------------
 //Fin génération
@@ -78,33 +166,12 @@ const sortCards = () => {
     }
   }
 }
-sortCards();
-
-console.log("Après le tri : ", myCards);
 
 //L'ordi sort une carte au hasard parmis les 10
 const getRandomCard = () => {
   return allCards[getRandom()];
 }
 
-console.log("getRandomCard()", getRandomCard());
-
-const playTheCard = (ev) => {
-  let cardClickedValue = Number(ev.target.getAttribute("value"));
-  let currentCardValue = currentCard.getValue();
-
-  if (cardClickedValue === currentCardValue) {
-    points++;
-  }
-  else {
-    points--;
-  }
-  ev.target.remove();
-  updatePoints();
-  removeCardFromHand(cardClickedValue);
-  setCurrentCard();
-
-}
 const removeCardFromHand = (cardClickedValue) => {
   const index = myCards.findIndex(card => card.getValue() === cardClickedValue);
   if (index !== -1) {
@@ -126,10 +193,22 @@ const skip = () => {
 //Ajout des cartes de la main
 const showHandCards = () => {
   for (let i = 0; i < myCards.length; i++) {
-    myCardsZone.innerHTML += `<div class="card" id="card" value="${myCards[i].getValue()}">${myCards[i].getValue()}</div>`;
+    const cardDiv = document.createElement("div");
+    cardDiv.className = "card";
+    cardDiv.id = "card";
+    cardDiv.draggable = true;
+    cardDiv.textContent = myCards[i].getValue();
+
+    // Ajout des listeners drag & drop ici
+    cardDiv.addEventListener('dragstart', e => {
+      dragged = cardDiv;
+      e.target.classList.add('active');
+      e.dataTransfer.effectAllowed = "move";
+    });
+
+    myCardsZone.appendChild(cardDiv);
   }
 }
-showHandCards();
 
 const checkEndGame = () => {
   //Si toutes les cartes de allCards sont played, alors on arrête le jeu et on réinitialise tout
@@ -143,16 +222,17 @@ const checkEndGame = () => {
   // Vérification si l'ordi a joué toutes les cartes
   // ou
   // Vérification si on a joué toutes nos cartes
-  if (nbCardPlayed > 9 || myCards.length <= 0) {
+  if (nbCardPlayed > 9 || myCards.length <= 0 || secondsByLvl[currentLvl] <= 0) {
     alert("Fini | Points : " + points + " points");
+    resetGame();
     return true;
   }
-
   return false;
 }
 const resetGame = () => {
   // Réinitialise les variables
   points = 0;
+  secondsByLvl = [100,80,60,40,20];
   allCards = [];
   myCards = [];
   myCardsZone.innerHTML = "";
@@ -169,15 +249,17 @@ const resetGame = () => {
 
   // Nouvelle carte à trouver
   setCurrentCard();
+  timer();
+  addLvl();
+  updateLvl();
 }
 
 //Ajout de la 1ère carte à trouver
 const setCurrentCard = () => {
   if (checkEndGame()) {
-    resetGame();
-
     return;
   }
+
   currentCard = getRandomCard();
 
   //Si la carte trouvée à déja été jouée, alors on reprend une cartes
@@ -187,9 +269,8 @@ const setCurrentCard = () => {
 
   currentCard.setPlayedToTrue();
 
-  cardToFindZone.innerHTML = `<div class="card" id="card" value="${currentCard.getValue()}">${currentCard.getValue()}</div>`;
+  cardToFindZone.innerHTML = `<div class="card" id="card">${currentCard.getValue()}</div>`;
 }
-setCurrentCard();
 
 //-----------------------------------------------------------
 // Fin Ajout des cards pour le front
@@ -202,12 +283,25 @@ setCurrentCard();
 const handleClicks = (ev) => {
   ev.preventDefault();
 
-  if (ev.target.id === "card") playTheCard(ev);
   if (ev.target.id === "skipBtn") skip();
 }
-myCardsZone.addEventListener("click", handleClicks);
 skipBtn.addEventListener("click", handleClicks);
 
 //-----------------------------------------------------------
 // Fin Events
 //-----------------------------------------------------------
+
+generateAllCards(10);
+getFiveCards();
+
+console.log("myCards", myCards);
+
+sortCards();
+
+console.log("Après le tri : ", myCards);
+
+showHandCards();
+setCurrentCard();
+timer();
+time.innerHTML = "0:00";
+updateLvl();
