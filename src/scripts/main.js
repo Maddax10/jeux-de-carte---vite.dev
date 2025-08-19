@@ -144,10 +144,7 @@ const checkEndGame = () => {
   // ou
   // Vérification si on a joué toutes nos cartes
   if (nbCardPlayed > 9 || myCards.length <= 0) {
-<<<<<<< HEAD
-=======
     alert("Fini | Points : " + points + " points");
->>>>>>> front
     return true;
   }
 
