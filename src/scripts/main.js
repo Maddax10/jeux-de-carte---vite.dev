@@ -3,7 +3,7 @@ import { Card } from "./card.js"
 const myCardsZone = document.querySelector("#myCardsZone");
 const cardToFindZone = document.querySelector("#cardToFindZone");
 const pointsSpan = document.querySelector("#points");
-const skipBtn = document.querySelector("#skip");
+const skipBtn = document.querySelector("#skipBtn");
 
 let allCards = new Array();
 const emptyCard = new Card(0);
@@ -17,49 +17,7 @@ const getRandom = () => {
   return Math.floor(Math.random() * 10);
 }
 
-//———————————————————————————————————————————————————————————
-// Events
-//———————————————————————————————————————————————————————————
 
-
-const playTheCard = (ev) => {
-  let cardClickedValue = Number(ev.target.getAttribute("value"));
-  let currentCardValue = currentCard.getValue();
-
-  if (cardClickedValue === currentCardValue) {
-    points++;
-  }
-  else {
-    points--;
-  }
-  ev.target.remove();
-  updatePoints();
-  removeCardFromHand(cardClickedValue);
-  setCurrentCard();
-
-}
-const removeCardFromHand = (cardClickedValue) => {
-  const index = myCards.findIndex(card => card.getValue() === cardClickedValue);
-  if (index !== -1) {
-    myCards.splice(index, 1);
-  }
-}
-//Quand on skip, le pc retire une nouvelle carte
-const skip = () => {
-  setCurrentCard();
-  console.log("skip");
-}
-const handleClicks = (ev) => {
-  ev.preventDefault();
-
-  if (ev.target.id === "card") playTheCard(ev);
-  if (ev.target.id === "skip") skip();
-}
-myCardsZone.addEventListener("click", handleClicks);
-skipBtn.addEventListener("click", handleClicks);
-//-----------------------------------------------------------
-// Fin Events
-//-----------------------------------------------------------
 
 const updatePoints = () => {
   pointsSpan.innerHTML = points;
@@ -130,6 +88,34 @@ const getRandomCard = () => {
 }
 
 console.log("getRandomCard()", getRandomCard());
+
+const playTheCard = (ev) => {
+  let cardClickedValue = Number(ev.target.getAttribute("value"));
+  let currentCardValue = currentCard.getValue();
+
+  if (cardClickedValue === currentCardValue) {
+    points++;
+  }
+  else {
+    points--;
+  }
+  ev.target.remove();
+  updatePoints();
+  removeCardFromHand(cardClickedValue);
+  setCurrentCard();
+
+}
+const removeCardFromHand = (cardClickedValue) => {
+  const index = myCards.findIndex(card => card.getValue() === cardClickedValue);
+  if (index !== -1) {
+    myCards.splice(index, 1);
+  }
+}
+//Quand on skip, le pc retire une nouvelle carte
+const skip = () => {
+  setCurrentCard();
+  console.log("skip");
+}
 //-----------------------------------------------------------
 // Fin manipulation
 //-----------------------------------------------------------
@@ -158,7 +144,11 @@ const checkEndGame = () => {
   // ou
   // Vérification si on a joué toutes nos cartes
   if (nbCardPlayed > 9 || myCards.length <= 0) {
+<<<<<<< HEAD
     alert("Fini avec " + points + " points");
+=======
+    alert("Fini | Points : " + points + " points");
+>>>>>>> front
     return true;
   }
 
@@ -207,4 +197,21 @@ setCurrentCard();
 
 //-----------------------------------------------------------
 // Fin Ajout des cards pour le front
+//-----------------------------------------------------------
+
+//———————————————————————————————————————————————————————————
+// Events
+//———————————————————————————————————————————————————————————
+
+const handleClicks = (ev) => {
+  ev.preventDefault();
+
+  if (ev.target.id === "card") playTheCard(ev);
+  if (ev.target.id === "skipBtn") skip();
+}
+myCardsZone.addEventListener("click", handleClicks);
+skipBtn.addEventListener("click", handleClicks);
+
+//-----------------------------------------------------------
+// Fin Events
 //-----------------------------------------------------------
